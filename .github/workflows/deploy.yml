@@ -1,0 +1,56 @@
+name: Deploy Laravel App to Hostinger
+
+on:
+  push:
+    branches:
+      - main  # Change if your deployment branch is different
+
+jobs:
+  deploy:
+    name: Deploy to Hostinger
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, bcmath, pdo, mysql
+        ini-values: post_max_size=256M, upload_max_filesize=256M
+        coverage: none
+
+    - name: Install Composer Dependencies
+      run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+    - name: Install NPM Dependencies & Build
+      run: |
+        npm install
+        npm run build
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.8.0
+      with:
+        ssh-private-key: ${{ secrets.HOSTINGER_SSH_KEY }}
+
+    - name: Deploy to Hostinger via SSH
+      run: |
+        ssh -o StrictHostKeyChecking=no -p ${{ secrets.HOSTINGER_SSH_PORT }} ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} << 'EOF'
+          cd /home/u807263449/domains/dermacirclesph.com/public_html/amplify  # Change this to your actual directory
+          git pull origin main
+          composer install --no-interaction --prefer-dist --optimize-autoloader
+          npm install
+          npm run build
+          php artisan migrate --force
+          php artisan db:seed --force
+          php artisan cache:clear
+          php artisan view:clear
+          php artisan config:clear
+          php artisan route:clear
+          php artisan optimize
+          php artisan config:cache
+          php artisan route:cache
+          php artisan storage:link
+        EOF
