@@ -5,7 +5,7 @@ export const getSalesColumns = (): ColumnDef<any>[] => [
     {
         accessorKey: '',
         header: 'Date',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, '2025-10-10'),
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.original.created_at.toLocaleDateString()),
     },
 //     {
 //         accessorKey: '',
