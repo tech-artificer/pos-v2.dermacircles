@@ -1,4 +1,4 @@
-name: Deploy Laravel App to Hostinger
+name: Deploy Dermacircles App to Hostinger
 
 on:
   push:
@@ -22,6 +22,11 @@ jobs:
         extensions: mbstring, bcmath, pdo_mysql
         ini-values: post_max_size=256M, upload_max_filesize=256M
         coverage: none
+    
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
 
     - name: Install Composer Dependencies
       run: composer install --no-interaction --prefer-dist --optimize-autoloader
@@ -38,8 +43,8 @@ jobs:
 
     - name: Deploy to Hostinger via SSH
       run: |
-          ssh-keyscan -p ${{ secrets.HOSTINGER_SSH_PORT }} ${{ secrets.HOSTINGER_SSH_HOST }} >> ~/.ssh/known_hosts
-          cd /home/u807263449/domains/dermacirclesph.com/public_html/amplify  # Change this to your actual directory
+          ssh -o StrictHostKeyChecking=no -p ${{ secrets.HOSTINGER_SSH_PORT }} ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} << 'EOF'
+          cd $DEPLOY_DIR  # Change this to your actual directory
           git pull origin main
           composer install --no-interaction --prefer-dist --optimize-autoloader
           npm install
@@ -54,4 +59,4 @@ jobs:
           php artisan config:cache
           php artisan route:cache
           php artisan storage:link
-        EOF
+          EOF
