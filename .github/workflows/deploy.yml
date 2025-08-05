@@ -19,7 +19,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.2'
-        extensions: mbstring, bcmath, pdo, mysql
+        extensions: mbstring, bcmath, pdo_mysql
         ini-values: post_max_size=256M, upload_max_filesize=256M
         coverage: none
 
@@ -38,7 +38,7 @@ jobs:
 
     - name: Deploy to Hostinger via SSH
       run: |
-        ssh -o StrictHostKeyChecking=no -p ${{ secrets.HOSTINGER_SSH_PORT }} ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} << 'EOF'
+          ssh-keyscan -p ${{ secrets.HOSTINGER_SSH_PORT }} ${{ secrets.HOSTINGER_SSH_HOST }} >> ~/.ssh/known_hosts
           cd /home/u807263449/domains/dermacirclesph.com/public_html/amplify  # Change this to your actual directory
           git pull origin main
           composer install --no-interaction --prefer-dist --optimize-autoloader
