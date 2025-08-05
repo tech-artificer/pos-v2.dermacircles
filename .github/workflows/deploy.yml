@@ -27,7 +27,7 @@ jobs:
             -p ${{ secrets.HOSTINGER_SSH_PORT }} \
             ${{ secrets.HOSTINGER_SSH_USER }}@${{ secrets.HOSTINGER_SSH_HOST }} << 'EOF'
 
-            cd /home/${{ secrets.HOSTINGER_SSH_USER }}/domains/dermacirclesph.com/public_html/amplify
+            cd /home/${{ secrets.HOSTINGER_SSH_USER }}/domains/dermacirclesph.com/public_html/reports
 
             echo "Pulling latest code..."
             git pull origin main
