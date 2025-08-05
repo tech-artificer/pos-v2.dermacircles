@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-         Branch::firstOrCreate([
+        Branch::firstOrCreate([
             'name' => 'Warehouse',
             'location' => 'Main'
         ]);
