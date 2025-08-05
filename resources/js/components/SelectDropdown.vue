@@ -10,11 +10,11 @@ import {
 } from '@/components/ui/select'
 
 // 
-interface Option {
-    id?: number;
-    name?: string;
-    route?: string;
-}
+// interface Option {
+//     id?: number;
+//     name?: string;
+//     route?: string;
+// }
 
 defineProps<{
     label: string;

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Report;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Arr;
 use Inertia\Inertia;
 use App\Models\Patient;
 use App\Models\DiagnosisTags;
@@ -40,9 +39,9 @@ class PatientReportController extends Controller
             ])
             ->whereNotNull('lastname')
             ->whereNotNull('firstname')
-            ->when($gender && $gender !== 'all', fn($q) => $q->where('gender', $gender))
-            ->when($civilStatus && $civilStatus !== 'all', fn($q) => $q->where('civil_status', $civilStatus))
-            ->when($source && $source !== 'all', fn($q) => $q->where('source', $source))
+            ->when(!is_null($gender) && $gender !== 'all', fn($q) => $q->where('gender', $gender))
+            ->when(!is_null($civilStatus) && $civilStatus !== 'all', fn($q) => $q->where('civil_status', $civilStatus))
+            ->when(!is_null($source) && $source !== 'all', fn($q) => $q->where('source', $source))
             ->orderBy('lastname')
             ->get();
 
@@ -103,15 +102,16 @@ class PatientReportController extends Controller
      */
     private function distinctTags(string $column)
     {
-        return Patient::query()
-            ->distinct()
-            ->whereNotNull($column)
-            ->where($column, '!=', '')
-            ->pluck($column)
-            ->filter()
-            ->map(fn($tag) => Str::of($tag)->lower()->title())
-            ->unique()
-            ->sort()
-            ->values();
+        return cache()->remember("patient_tags_{$column}", 3600, function () use ($column) {
+            return Patient::query()
+                ->distinct()
+                ->whereNotNull($column)
+                ->where($column, '!=', '')
+                ->pluck($column)
+                ->map(fn($tag) => Str::of($tag)->lower()->title())
+                ->unique()
+                ->sort()
+                ->values();
+        });
     }
 }

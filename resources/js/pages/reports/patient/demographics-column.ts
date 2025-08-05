@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button'
 export const getPatientReportColumns = (): ColumnDef<Patient>[] => [
    {
         accessorKey: 'fullName',  
-        header: ({ column }) => {
-            return h( 'div', { class: 'capitalize w-fit' }, 'NAME')
-        },
+        header: 'NAME',
+          
+        
         // header: ({ column }) => {
         //     return h(Button, {
         //         variant: 'ghost',
@@ -22,9 +22,7 @@ export const getPatientReportColumns = (): ColumnDef<Patient>[] => [
     },
     {
         accessorKey: 'civil_status',  
-        header: ({ column }) => {
-            return h( 'div', { class: 'capitalize w-fit' }, 'CIVIL STATUS')
-        },
+        header: 'CIVIL STATUS',
         cell: ({ row }) => {
             return h( 'div', { class: 'capitalize' }, row.getValue('civil_status') ?? '--')
         },          
@@ -45,9 +43,7 @@ export const getPatientReportColumns = (): ColumnDef<Patient>[] => [
     },
     {
         accessorKey: 'birthdate',  
-        header: ({ column }) => { 
-            return h( 'div', { class: 'capitalize w-fit' }, 'BIRTHDATE')
-        },
+        header: 'BIRTHDATE',
         cell: ({ row }) => {
             return h( 'div', { class: 'capitalize' }, row.getValue('birthdate') ?? '--')
         },          

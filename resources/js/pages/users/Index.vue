@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
+import { User } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -11,8 +12,8 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const props = defineProps<{
-    users: any[];
+defineProps<{
+    users: User[];
 }>();
 
 </script>
