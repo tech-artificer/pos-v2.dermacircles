@@ -58,6 +58,15 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@theme {
+
+    --color-dark-gray: #252525;
+    --color-blue: #2563eb;
+    --color-red: #dc2626;
+    --color-green: #16a34a;
+    --color-orange: #f97316;
+}
+
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -166,12 +175,4 @@
     }
 }
 
-@theme {
 
-  
-    --color-dark-gray: #252525;
-    --color-blue: #2563eb;
-    --color-red: #dc2626;
-    --color-green: #16a34a;
-    --color-orange: #f97316;
-}

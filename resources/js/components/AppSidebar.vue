@@ -17,54 +17,70 @@ const mainNavItems: NavItem[] = [
         href: '/dashboard',
         icon: LayoutGrid,
         hasSubItems: false,
-        isActive: page.url === '/dashboard',
+        isActive: page.url.startsWith('/dashboard'),
     },
+    // {
+    //     title: 'Patient Management',
+    //     href: '---',
+    //     icon: UserCog,
+    //     isActive: page.url.startsWith('/patients'),
+    //     hasSubItems: false,
+    // },
+    {
+        title: 'User Management',
+        href: '/users',
+        icon: UserCog,
+        isActive: page.url.startsWith('/users'),
+        hasSubItems: false,
+    },
+];
+
+const reportNavItems: NavItem[] = [
     {
         title: 'Reports',
         href: '/reports',
         icon: ChartNoAxesCombined,
         isActive: page.url.startsWith('/reports'),
         hasSubItems: false,
-        // items: [
-        //     {
-        //         title: 'Sales',
-        //         href: '/reports/sales',
-        //         // icon: Circle,
-        //         isActive: false,
-        //     },
-        // ]
-    },
-    {
-        title: 'User Management',
-        href: '/users',
-        icon: UserCog,
-        isActive: page.url.startsWith('/reports'),
-        hasSubItems: false,
-        // items: [
-        //     {
-        //         title: 'Sales',
-        //         href: '/reports/sales',
-        //         // icon: Circle,
-        //         isActive: false,
-        //     },
-        // ]
-    },
-    {
-        title: 'Access Control',
-        href: '/accessibility',
-        icon: KeySquare,
-        isActive: page.url.startsWith('/reports'),
-        hasSubItems: false,
+        items: [
+            {
+                title: 'Sales',
+                href: '/reports/sales',
+                icon: KeySquare,
+                isActive: page.url.startsWith('/reports/sales'),
+            },
+        ],
     },
 ];
 
-const footerNavItems: NavItem[] = [
+const adminNavItems: NavItem[] = [
+    // {
+    //     title: 'Employees',
+    //     href: '#',
+    //     icon: Tags,
+    // },
+    {
+        title: 'Accessibility',
+        href: '/accessibility',
+        icon: Tags,
+        isActive: page.url.startsWith('/accessibility'),
+    },
+    // {
+    //     title: 'Branches',
+    //     href: '#',
+    //     icon: Tags,
+    // },
+];
+
+const dataNavItems: NavItem[] = [
     {
         title: 'Diagnosis Tags',
-        href: '/configuration/diagnosis/tags',
+        href: '#',
         icon: Tags,
     },
 ];
+
+
 </script>
 
 <template>
@@ -82,11 +98,13 @@ const footerNavItems: NavItem[] = [
         </SidebarHeader>
 
         <SidebarContent>
-            <NavMain :items="mainNavItems" />
+            <NavMain :items="mainNavItems" type="Main" />
+            <NavMain :items="reportNavItems" type="Reports" />
         </SidebarContent>
 
         <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
+            <NavFooter :items="adminNavItems" type="Administration" />
+            <!-- <NavFooter :items="dataNavItems" type="Master Data" /> -->
             <NavUser />
         </SidebarFooter>
     </Sidebar>
