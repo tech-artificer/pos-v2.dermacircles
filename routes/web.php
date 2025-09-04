@@ -21,17 +21,17 @@ Route::redirect('/', '/login');
 
 Route::get('dashboard', function () {
 
-      $monthlySales = Sale::whereMonth('date_created', now()->month)
-                    ->whereYear('date_created', now()->year)
-                    ->sum('total');
+    //   $monthlySales = Sale::whereMonth('date_created', now()->month)
+    //                 ->whereYear('date_created', now()->year)
+    //                 ->sum('total');
                     
-        // Format the result as a currency string if needed
-        $formattedMonthlySales = number_format($monthlySales, 2);
+    //     // Format the result as a currency string if needed
+    //     $formattedMonthlySales = number_format($monthlySales, 2);
 
     return Inertia::render('Dashboard', [
         'title' => 'Dashboard',
         'description' => 'Dashboard',
-        'monthlySales' => $formattedMonthlySales
+        'monthlySales' => '10000000000'
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 

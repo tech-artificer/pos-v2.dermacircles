@@ -19,11 +19,17 @@ import {
   Download,
   Clock,
   Mail,
-  Settings,
+  Activity,
   Users,
+  CircleArrowOutUpRight,
+  ChartLine,
+  MapPin
 } from 'lucide-vue-next';
 import StatData from '@/components/reports/StatData.vue';
 
+
+import ReportCallToAction from '@/components/reports/ReportCallToAction.vue';
+import QuickActions from '@/components/reports/QuickActions.vue';
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: '/dashboard' },
 ];
@@ -37,9 +43,33 @@ const props = defineProps<{
 const statistics = [
   {
     title: 'Total Patients',
-    value: '1000',
-    subtitle: '50 Transactions',
+    value: '₱ ********',
+    subtitle: '**** Transactions',
     icon: Users,
+    trend: '+12%',
+    trendUp: true
+  },
+   {
+    title: 'Daily Sales (₱)',
+    value: '₱ ********',
+    subtitle: '**** Transactions',
+    icon: BarChart3,
+    trend: '+12%',
+    trendUp: true
+  },
+   {
+    title: 'Products Sold',
+    value: '₱ ********',
+    subtitle: '**** Transactions',
+    icon: ChartLine,
+    trend: '+12%',
+    trendUp: true
+  },
+   {
+    title: 'Services Sold',
+    value: '₱ ********',
+    subtitle: '**** Transactions',
+    icon: Activity,
     trend: '+12%',
     trendUp: true
   },
@@ -77,24 +107,24 @@ const reportItems = [
 
 const quickActions = [
   {
-    title: 'Export All Data',
-    icon: Download,
+    title: 'Patient Demographics',
+    icon: CircleArrowOutUpRight,
     action: () => console.log('Export all data')
   },
   {
-    title: 'Schedule Report',
-    icon: Clock,
-    action: () => console.log('Schedule report')
+    title: 'Patient Visits',
+    icon: MapPin,
+    action: () => console.log('patient visits')
   },
   {
-    title: 'Custom Report Builder',
-    icon: Settings,
-    action: () => console.log('Custom report builder')
+    title: 'Sales Summary',
+    icon: ChartLine,
+    action: () => console.log('sales summary')
   },
   {
-    title: 'Email Reports',
-    icon: Mail,
-    action: () => console.log('Email reports')
+    title: 'Log Reports',
+    icon: Activity,
+    action: () => console.log('log reports')
   }
 ];
 
@@ -117,6 +147,11 @@ const quickActions = [
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <StatData :statistics="statistics"  />
       </div>
+
+      <!-- <ReportCallToAction :report-items="reportItems" /> -->
+
+      <!-- Quick Actions -->
+      <QuickActions :quickActions="quickActions"/>
 
     </div>
     </AppLayout>
