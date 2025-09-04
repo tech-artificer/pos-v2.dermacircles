@@ -7,15 +7,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use App\Models\Patient;
-use App\Models\DiagnosisTags;
+use App\Models\DermatologyDiagnosis;
+use App\Models\Sales as Sale;
 
 class PatientReportController extends Controller
 {
     public function index()
     {
+
+        $actualPatientsCount = Sale::distinct('patient_id')->count();
+
         return Inertia::render('reports/patient/Index', [
             'title' => 'Reports | Patients',
             'description' => 'Patient Report',
+            'actualPatientsCount' => $actualPatientsCount,
+    
         ]);
     }
 
@@ -49,10 +55,7 @@ class PatientReportController extends Controller
             'title' => 'Reports | Patients',
             'description' => 'Patient Demographics Report',
             'patients' => $patients,
-            'genderTags' => $this->distinctTags('gender'),
             'civilStatusTags' => $this->distinctTags('civil_status'),
-            'sourceTags' => $this->distinctTags('source'),
-            'totalPatients' => $patients->count(),
             'filters' => $filters,
         ]);
     }
@@ -64,10 +67,10 @@ class PatientReportController extends Controller
             'md_assigned' => ['nullable', 'string'], // reserved for future filter use
         ]);
 
-        $diagnosis = $filters['diagnosis'] ?? null;
+        // $diagnosis = $filters['diagnosis'] ?? null;
 
         $patients = Patient::query()
-            ->with(['md', 'diagnosis', 'treatments'])
+            ->with(['md', 'diagnosis', 'treatments.user.therapist'])
             ->select([
                 'patient_id', 'lastname', 'firstname', 'middlename',
                 'md_assigned', 'address', 'gender',
@@ -76,21 +79,30 @@ class PatientReportController extends Controller
             ->whereNotNull('firstname')
             ->whereNotNull('md_assigned')
             ->whereHas('diagnosis', fn($q) => $q->whereNotNull('diagnosis'))
-            ->when($diagnosis, fn($q) =>
-                $q->whereHas('diagnosis', fn($dq) =>
-                    $dq->where('diagnosis', 'LIKE', '%' . $diagnosis . '%')
-                )
-            )
+            // ->when($diagnosis, fn($q) =>
+            //     $q->whereHas('diagnosis', fn($dq) =>
+            //         $dq->where('diagnosis', 'LIKE', '%' . $diagnosis . '%')
+            //     )
+            // )
             ->orderBy('lastname')
             ->get();
+    
+       return Inertia::render('reports/patient/Diagnosis', [
+            'title' => 'Reports | Patients',
+            'description' => 'Patient Diagnosis Report',
+            'patients' => $patients,
+            'genderTags' => $this->distinctTags('gender'),
+            'civilStatusTags' => $this->distinctTags('civil_status'),
+            'sourceTags' => $this->distinctTags('source'),
+            'filters' => $filters,
+        ]);
+    }
 
-        return Inertia::render('reports/patient/Diagnosis', [
+    public function visits(Request $request) {
+        
+        return Inertia::render('reports/patient/Visits', [
             'title' => 'Reports | Patients',
             'description' => 'Patient Report',
-            'patients' => $patients,
-            'filters' => $filters,
-            'diagnosisTags' => DiagnosisTags::select(['tag_id', 'tag as label'])->get(),
-            'totalPatients' => $patients->count(),
         ]);
     }
 

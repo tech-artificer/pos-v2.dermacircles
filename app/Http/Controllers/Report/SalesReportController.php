@@ -16,19 +16,25 @@ class SalesReportController extends Controller
      */
     public function index(Request $request)
     {   
-        // $sales = [];
+        $sales = [];
 
-        // return Inertia::render('Sales', [
-        //     'title' => 'Reports | Sales',
-        //     'description' => 'Sales Report',
-        //     'sales' => $sales
-        // ]);
-        $this->summary($request);
+        return Inertia::render('reports/sales/Index', [
+            'title' => 'Reports | Sales',
+            'description' => 'Sales Report',
+            'sales' => $sales
+        ]);
+        // $this->summary($request);
     }
 
     public function summary(Request $request)
     {
+        $salesReports = [
+            'sales' => [],
+            'totalSalesAmount' => 0,
+            'totalItemsSold' => 0,
 
+        ];
+        $userBranch = $request->user()->branches()->get();
         // $request->validate([
         //    'report' => ['required', 'string']
         // ]);
@@ -48,7 +54,7 @@ class SalesReportController extends Controller
                 $query->where('branch_id', $request->branch_id);
             })
             ->orderBy('date_created', 'desc')
-            ->paginate(10); // Paginate for large results
+            ->get(); // Paginate for large results
 
         // Calculate totals for the entire filtered set (not just current page)
         $totalSalesAmount = Sales::betweenDates($startDate, $endDate)
@@ -65,16 +71,42 @@ class SalesReportController extends Controller
             ->sum('sales_line_items.quantity');
 
         // Get branches for filter dropdown (if needed)
-        $branches = Branch::select('branch_id', 'branch_name')->get();
+        // $branches = Branch::select('branch_id', 'branch_name')->get();
 
-        return Inertia::render('reports/sales/DailySales', [
-            'startDate' => $startDate,
-            'endDate' => $endDate,
+        return Inertia::render('reports/sales/Summary', [
+            // 'startDate' => $startDate,
+            // 'endDate' => $endDate,
+            'salesReports' => $salesReports,
             'sales' => $sales,
-            'filters' => $request->only('start_date', 'end_date', 'branch_id'),
+            'filters' => [
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'userBranch' => $userBranch, // Pass branches to frontend
+            ],
             'totalSalesAmount' => number_format($totalSalesAmount, 2),
             'totalItemsSold' => $totalItemsSold,
-            'branches' => $branches, // Pass branches to frontend
+            
         ]);
+    }
+
+    public function generateReport(Request $request)
+{
+    $request->validate([
+        'startDate' => 'required|date',
+        'endDate' => 'required|date|after_or_equal:startDate',
+    ]);
+
+        // Your sales report logic here
+        $reportData = [
+            'totalSales' => 125420.50,
+            'totalOrders' => 342,
+            'averageOrderValue' => 366.73,
+            'topProducts' => [
+                ['name' => 'Product A', 'sales' => 45200],
+                ['name' => 'Product B', 'sales' => 32100],
+            ]
+        ];
+
+        return back()->with(['reportData' => $reportData]);
     }
 }

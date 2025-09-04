@@ -2,10 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
+use App\Models\Sales as Sale;
 use App\Http\Controllers\{
     ReportsController,
     UserController,
+    RoleController,
+    BranchController,
     AccessibilityController,
     DiagnosisTagsController,
 };
@@ -15,13 +17,22 @@ use App\Http\Controllers\Report\{
     PatientReportController,
 };
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name('home');
+Route::redirect('/', '/login');
 
 Route::get('dashboard', function () {
 
-    return Inertia::render('Dashboard');
+      $monthlySales = Sale::whereMonth('date_created', now()->month)
+                    ->whereYear('date_created', now()->year)
+                    ->sum('total');
+                    
+        // Format the result as a currency string if needed
+        $formattedMonthlySales = number_format($monthlySales, 2);
+
+    return Inertia::render('Dashboard', [
+        'title' => 'Dashboard',
+        'description' => 'Dashboard',
+        'monthlySales' => $formattedMonthlySales
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -32,29 +43,25 @@ Route::middleware('auth')->group(function () {
         Route::get('/patients', [PatientReportController::class, 'index'])->name('reports.patients.index');
         Route::get('/patients/demographics', [PatientReportController::class, 'demographics'])->name('reports.patients.demographics');
         Route::get('/patients/diagnosis', [PatientReportController::class, 'diagnosis'])->name('reports.patients.diagnosis');
+        Route::get('/patients/visits', [PatientReportController::class, 'visits'])->name('reports.patients.visits');
         
         Route::get('/sales', [SalesReportController::class, 'index'])->name('reports.sales.index');
         Route::get('/sales/summary', [SalesReportController::class, 'summary'])->name('reports.sales.summary');
+        Route::get('/sales/products-services', [SalesReportController::class, 'summary'])->name('reports.sales.products-services');
+        Route::get('/sales/employees', [SalesReportController::class, 'summary'])->name('reports.sales.employees');
+        Route::post('/sales-report', [SalesReportController::class, 'generateReport']);
     });
 
     
-    Route::resource('/users', UserController::class)->except(['show']);
-    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-
+    Route::resource('/users', UserController::class);
+    Route::resource('/branches', BranchController::class);
     Route::get('/accessibility', [AccessibilityController::class, 'index'])->name('accessibility.index');
+    Route::post('/accessibility/{role}/role-permissions', [AccessibilityController::class, 'updatePermissions'])->name('accessibility.role-permissions');
 
-    Route::resource('/configuration/diagnosis/tags', DiagnosisTagsController::class);
-    // Route::get('accessibility/roles', [AccessibilityController::class, 'roles'])->name('accessibility.roles');
-    // Route::get('accessibility/permissions', [AccessibilityController::class, 'permissions'])->name('accessibility.permissions');
-    // Route::get('accessibility/roles/{role}/edit', [AccessibilityController::class, 'editRole'])->name('accessibility.roles.edit');
-    // Route::put('accessibility/roles/{role}', [AccessibilityController::class, 'updateRole'])->name('accessibility.roles.update');
-    // Route::get('accessibility/permissions/{permission}/edit', [AccessibilityController::class, 'editPermission'])->name('accessibility.permissions.edit');
-    // Route::put('accessibility/permissions/{permission}', [AccessibilityController::class, 'updatePermission'])->name('accessibility.permissions.update');
 
-    // Route::get('settings', function () {
-    //     return Inertia::render('Settings/Index');
-    // })->name('settings.index');
+    Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
+
 });
 
 require __DIR__.'/settings.php';

@@ -4,34 +4,29 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Branch extends Model
 {
-    protected $connection = 'dc_pos';
-    protected $table = 'branch';
-    protected $primaryKey = 'branch_id';
+    protected $table = 'branches';
 
     protected $fillable = [
         'branch_name',
         'location',
         'active',
+        'contact_number',
     ];
-
-    // protected $hidden = [
-    //     'created_at',
-    //     'updated_at',
-    //     'deleted_at',
-    // ];
-
-    // public function users() : BelongsToMany
-    // {
-    //     return $this->belongsToMany(User::class, 'branch_user_roles')->withPivot('role_id')->withTimestamps();
-    // }
+    /**
+     * The users that belong to the branch.
+     */
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class, 'user_branches');
+    }
 
 
     public function scopeActive(Builder $query)
     {
-        return $query->where('active', true);
+        return $query->where('is_active', true);
     }
 }

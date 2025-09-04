@@ -4,6 +4,7 @@ namespace App\Models\Patient;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\OldPos\User as OldPosUser;
 
 class Treatment extends Model
 {
@@ -18,6 +19,6 @@ class Treatment extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(OldPosUser::class, 'created_by');
     }
 }
